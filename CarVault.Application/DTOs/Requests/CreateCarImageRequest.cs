@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CarVault.Application.DTOs.Requests;
 public record class CreateCarImageRequest
 (
- int CarId,
+// int CarId,
 string ImageUrl 
     
  );

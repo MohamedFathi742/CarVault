@@ -5,16 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CarVault.Application.DTOs.Responses;
-public record class OrderResponse
-(
- int Id,
+public record OrderDetails
+(int Id,
 DateTime OrderDate,
 string Status,
  string UserId,
-//string UserFullName,
-int CarId
+string UserFullName,
+List<CarImageResponse>? CarImages,
+List<CarWithImageAndCategoryResponse>? Cars
+
+//int CarId,
 //string CarModel,
 //string CarBrand,
 //decimal CarPrice,
-//List<string>? CarImages
-);
+
+    );
+

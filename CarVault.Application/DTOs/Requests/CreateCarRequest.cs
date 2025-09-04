@@ -11,6 +11,6 @@ public record class CreateCarRequest
  string Brand ,
  decimal Price ,
  int CategoryId,
- List<string>? CarImages 
+ List<CreateCarImageRequest>? CarImages 
 
 );

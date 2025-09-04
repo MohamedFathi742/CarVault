@@ -5,8 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CarVault.Application.DTOs.Responses;
-public record class CategoryResponse
+public record CategoryWithCarResponse
 (
-   int Id ,
- string Name 
- );
+int Id ,
+string Name,
+List<CarWithImageAndCategoryResponse> Cars
+    
+    
+    
+);

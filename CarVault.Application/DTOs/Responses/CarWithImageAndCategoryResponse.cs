@@ -5,15 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CarVault.Application.DTOs.Responses;
-public record class CarResponse
+public record CarWithImageAndCategoryResponse
+
 (
- int Id ,
- string Model ,
+ int Id,
+ string Model,
  string Brand,
- decimal Price ,
- bool IsSold ,
- int CategoryId 
- //string CategoryName ,
- //List<string>? CarImages 
-   
+ decimal Price,
+ bool IsSold,
+ int CategoryId,
+ string CategoryName,
+ List<string>? CarImages
+
+
 );

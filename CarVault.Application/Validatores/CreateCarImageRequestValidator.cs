@@ -11,8 +11,8 @@ public class CreateCarImageRequestValidator:AbstractValidator<CreateCarImageRequ
 {
     public CreateCarImageRequestValidator()
     {
-        RuleFor(x => x.CarId)
-           .GreaterThan(0).WithMessage("CarId must be greater than 0.");
+        //RuleFor(x => x.CarId)
+        //   .GreaterThan(0).WithMessage("CarId must be greater than 0.");
 
         RuleFor(x => x.ImageUrl)
             .NotEmpty().WithMessage("Image URL is required.")

@@ -10,7 +10,7 @@ public record class UpdateCarRequest
 string Model ,
 string Brand ,
 decimal Price ,
-bool IsSold ,
-int CategoryId ,
-List<string>? CarImages 
+bool IsSold 
+//int CategoryId ,
+//List<string>? CarImages 
 );

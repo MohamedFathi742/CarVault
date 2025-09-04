@@ -22,11 +22,11 @@ public class UpdateCarRequestValidator:AbstractValidator<UpdateCarRequest>
         RuleFor(c => c.Price)
             .GreaterThan(0).WithMessage("Price must be greater than zero.");
 
-        RuleFor(c => c.CategoryId)
-            .GreaterThan(0).WithMessage("CategoryId must be a valid ID.");
+        //RuleFor(c => c.CategoryId)
+        //    .GreaterThan(0).WithMessage("CategoryId must be a valid ID.");
 
-        RuleForEach(c => c.CarImages)
-            .NotEmpty().WithMessage("Image URL cannot be empty.")
-            .MaximumLength(500).WithMessage("Image URL must not exceed 500 characters.");
+        //RuleForEach(c => c.CarImages)
+        //    .NotEmpty().WithMessage("Image URL cannot be empty.")
+        //    .MaximumLength(500).WithMessage("Image URL must not exceed 500 characters.");
     }
 }
