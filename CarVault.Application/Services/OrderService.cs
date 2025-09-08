@@ -3,11 +3,6 @@ using CarVault.Application.DTOs.Responses;
 using CarVault.Application.Interfaces;
 using CarVault.Domain.Entities;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarVault.Application.Services;
 public class OrderService(IOrderRepository repository ):IOrderService
@@ -21,16 +16,16 @@ public class OrderService(IOrderRepository repository ):IOrderService
     }
 
 
-    public async Task<IEnumerable<OrderDetails>> GetOrderDetailsAsync()
+    public async Task<IEnumerable<OrderDetilesResponse>> GetOrderDetailsAsync()
     {
        var order=await _repository.GetOrderDetails();
-        return order;
+        return order.Adapt<IEnumerable<OrderDetilesResponse>>();
     }
 
-    public async Task<IEnumerable<OrderDetails>> GetOrderDetailsByUserIdAsync(string userId)
+    public async Task<IEnumerable<OrderDetilesResponse>> GetOrderDetailsByUserIdAsync(string userId)
     {
         var order=await _repository.GetOrderDetailsByUserId(userId);
-        return order;
+        return order.Adapt<IEnumerable<OrderDetilesResponse>>();
     }
 
     public async Task<OrderResponse?> GetOrderByIdAsync(int id)
@@ -61,11 +56,9 @@ public class OrderService(IOrderRepository repository ):IOrderService
         await _repository.DeleteAsync(order);
     }
 
-   
-   
-
-    
-
-   
-    
+    public async Task<PaginationResponse<OrderResponse>> GetPagedAsync(OrderFilterRequest orderFilter)
+    {
+       var result=await _repository.GetPagedAsync(orderFilter);
+        return result.Adapt<PaginationResponse<OrderResponse>>();
+    }
 }

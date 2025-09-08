@@ -1,10 +1,5 @@
 ﻿using CarVault.Application.DTOs.Requests;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarVault.Application.Validatores;
 public class CreateCarRequestValidator : AbstractValidator<CreateCarRequest>
@@ -25,12 +20,12 @@ public class CreateCarRequestValidator : AbstractValidator<CreateCarRequest>
         RuleFor(c => c.CategoryId)
             .GreaterThan(0).WithMessage("CategoryId must be a valid ID.");
 
-        RuleForEach(c => c.CarImages)
-            .ChildRules(image =>
-            {
-                image.RuleFor(i => i.ImageUrl)
-                .NotEmpty().WithMessage("Image URL cannot be empty.")
-                .MaximumLength(500).WithMessage("Image URL must not exceed 500 characters.");
-            });
+        //RuleForEach(c => c.CarImages)
+        //    .ChildRules(image =>
+        //    {
+        //        image.RuleFor(i => i.ImageUrl)
+        //        //.NotEmpty().WithMessage("Image URL cannot be empty.")
+        //        .MaximumLength(500).WithMessage("Image URL must not exceed 500 characters.");
+        //    });
     }
 }

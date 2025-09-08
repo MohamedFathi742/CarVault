@@ -1,6 +1,5 @@
-﻿using CarVault.Application.DTOs.Requests;
-using CarVault.Application.Services;
-using Microsoft.AspNetCore.Http;
+﻿using CarVault.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarVault.API.Controllers;
@@ -9,41 +8,15 @@ namespace CarVault.API.Controllers;
 public class CarImageController (ICarImageService service): ControllerBase
 {
     private readonly ICarImageService _service = service;
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var images = await _service.GetAllCarImagesAsync();
-        return Ok(images);
-
-    }
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-
-        var image = await _service.GetCarImagByIdAsync(id);
-        return Ok(image);
-
-    }
-
+    [Authorize(Roles = "Seller,Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddCategory(CreateCarImageRequest request)
+    public async Task<IActionResult> Upload([FromForm]int carId, IFormFileCollection files) 
     {
-
-        var image = await _service.AddCarImagAsync(request);
+    var image= await _service.UploadCarImagesAsync(carId, files);
         return Ok(image);
-
+    
+    
     }
-   
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCategory(int id)
-    {
-
-        await _service.DeleteCarImagAsync(id);
-        return NoContent();
-
-    }
-
 
 
 

@@ -1,6 +1,7 @@
 ﻿using CarVault.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,11 @@ public class CarConfiguration : IEntityTypeConfiguration<Car>
             .WithMany(ca=>ca.Cars)
             .HasForeignKey(c=>c.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);  
+
+        builder.HasOne(c=>c.User)
+            .WithMany(ca=>ca.Cars)
+            .HasForeignKey(c=>c.UserId)
+            .OnDelete(DeleteBehavior.SetNull);  
 
         builder.HasOne(c=>c.Order)
             .WithOne(o=>o.Car)

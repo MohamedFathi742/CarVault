@@ -31,5 +31,11 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.Cascade);
             
+
+        builder.HasMany(u => u.Cars)
+            .WithOne(o => o.User)
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CarVault.Application.DTOs.Responses;
+﻿namespace CarVault.Application.DTOs.Responses;
 public record CarWithImageAndCategoryResponse
 
 (
@@ -15,7 +9,7 @@ public record CarWithImageAndCategoryResponse
  bool IsSold,
  int CategoryId,
  string CategoryName,
- List<string>? CarImages
+ List<CarImageResponse>? CarImages
 
 
 );

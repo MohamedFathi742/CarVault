@@ -22,7 +22,7 @@ public class CategoryService(ICategoryRepository repository):ICategoryService
     public async Task<IEnumerable< CategoryWithCarResponse?>> GetCategoryWithCarAsync()
     {
         var category = await _repository.GetCategoryWithCarAsync();
-        return category;
+        return category.Adapt<IEnumerable<CategoryWithCarResponse?>>();
     }
     public async Task<CategoryResponse?> GetCategoryByIdAsync(int id)
     {
@@ -49,9 +49,9 @@ public class CategoryService(ICategoryRepository repository):ICategoryService
         await _repository.DeleteAsync(category);
     }
 
-   
-    
-
-  
-   
+    public async Task<PaginationResponse<CategoryResponse>> GetPagedAsync(CategoryFilterRequest categoryFilter)
+    {
+       var result=await _repository.GetPagedAsync(categoryFilter);
+        return result.Adapt<PaginationResponse<CategoryResponse>>();
+    }
 }

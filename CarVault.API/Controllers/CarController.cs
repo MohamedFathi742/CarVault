@@ -1,7 +1,9 @@
 ﻿using CarVault.Application.DTOs.Requests;
 using CarVault.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Security.Claims;
 
 namespace CarVault.API.Controllers;
 [Route("api/[controller]")]
@@ -29,14 +31,14 @@ public class CarController(ICarService service) : ControllerBase
 
     }
 
-    //[HttpGet("WithImage{id}")]
-    //public async Task<IActionResult> GetCarWithImage(int id) 
-    //{
-    
-    //var car =await _service.GetCarWithImageAsync(id);
-    //    return Ok(car);
-    
-    //}
+    [HttpGet("pagination")]
+    public async Task<IActionResult> Pagination([FromQuery]CarFilterRequest request)
+    {
+
+        var car = await _service.GetPagedAsync(request);
+        return Ok(car);
+
+    }
     [HttpGet("by-Category{id}")]
     public async Task<IActionResult> GetCarByCategoryId(int id ) 
     {
@@ -54,28 +56,35 @@ public class CarController(ICarService service) : ControllerBase
     
     }
 
-
+    [Authorize(Roles = "Seller,Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddCar([FromForm]CreateCarRequest request )
+    public async Task<IActionResult> AddCar([FromBody]CreateCarRequest request )
     {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-        var car = await _service.AddCarAsync(request);
+        
+        var car = await _service.AddCarAsync(request,userId!);
         return Ok(car);
 
     }
+    [Authorize(Roles = "Seller,Admin")]
     [HttpPut]
-    public async Task<IActionResult> UpdateCar(UpdateCarRequest request,int id )
+    public async Task<IActionResult> UpdateCar([FromBody] UpdateCarRequest request,[FromQuery]int id )
     {
-
-        var car = await _service.UpdateCarAsync(request,id);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var admin = User.IsInRole("Admin");
+        var car = await _service.UpdateCarAsync(request,id, userId!, admin);
         return NoContent();
 
     }
+    [Authorize(Roles = "Seller,Admin")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCar(int id )
+    public async Task<IActionResult> DeleteCar([FromBody]int id )
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var admin = User.IsInRole("Admin");
 
-     await  _service.DeleteCarAsync(id);
+     await  _service.DeleteCarAsync(id, userId!, admin);
         return NoContent();
     }
 

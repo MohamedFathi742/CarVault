@@ -1,0 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CarVault.Application.DTOs.Requests;
+public class CategoryFilterRequest:PaginationAndSearchRequest
+{
+    public string? Name { get; set; } 
+}

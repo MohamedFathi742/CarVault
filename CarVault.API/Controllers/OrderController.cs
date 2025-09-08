@@ -1,5 +1,6 @@
 ﻿using CarVault.Application.DTOs.Requests;
 using CarVault.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,14 @@ public class OrderController(IOrderService service) : ControllerBase
         return Ok(orders);
     
     }
+    [HttpGet("pagenation")]
+    public async Task<IActionResult> pagenation([FromQuery]OrderFilterRequest orderFilter)
+    { 
+    var orders= await _service.GetPagedAsync(orderFilter);
+        return Ok(orders);
+    
+    }
+    [Authorize(Roles = "Admin")]
     [HttpGet("details")]
     public async Task<IActionResult> OrderDetails()
     { 
@@ -24,6 +33,7 @@ public class OrderController(IOrderService service) : ControllerBase
         return Ok(orders);
     
     }
+    [Authorize(Roles = "Admin")]
     [HttpGet("details-by-user-{id}")]
     public async Task<IActionResult> GetOrderDetailsByUserId(string id)
     { 
@@ -31,7 +41,7 @@ public class OrderController(IOrderService service) : ControllerBase
         return Ok(orders);
     
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById(int id)
     {

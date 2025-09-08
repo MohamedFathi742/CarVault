@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CarVault.Application.DTOs.Responses;
+﻿namespace CarVault.Application.DTOs.Responses;
 public record class CarImageResponse
 (
  int Id ,
-string ImageUrl ,
-int CarId
+string ImageUrl 
+//int CarId
     
 );

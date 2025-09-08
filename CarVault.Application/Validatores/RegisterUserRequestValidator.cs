@@ -31,9 +31,9 @@ public class RegisterUserRequestValidator:AbstractValidator<RegisterUserRequest>
             .MaximumLength(250).WithMessage("Address must not exceed 250 characters.")
             .When(x => !string.IsNullOrWhiteSpace(x.Address));
 
-        RuleFor(x => x.ProfileImage)
-            .Must(url => string.IsNullOrEmpty(url) || Uri.TryCreate(url, UriKind.Absolute, out _))
-            .WithMessage("Profile image must be a valid URL.")
-            .When(x => !string.IsNullOrWhiteSpace(x.ProfileImage));
+        //RuleFor(x => x.ProfileImage)
+        //    .Must(url => string.IsNullOrEmpty(url) || Uri.TryCreate(url, UriKind.Absolute, out _))
+        //    .WithMessage("Profile image must be a valid URL.")
+        //    .When(x => !string.IsNullOrWhiteSpace(x.ProfileImage));
     }
 }

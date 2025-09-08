@@ -1,19 +1,14 @@
-﻿using CarVault.Application.DTOs.Requests;
-using CarVault.Application.DTOs.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace CarVault.Application.Services;
 public interface ICarImageService
 {
-    Task<IEnumerable<CarImageResponse>> GetAllCarImagesAsync();
-    Task<CarImageResponse?> GetCarImagByIdAsync(int id);
-    Task<CarImageResponse?> AddCarImagAsync(CreateCarImageRequest request);
-    Task DeleteCarImagAsync(int id);
+    //Task<IEnumerable<CarImageResponse>> GetAllCarImagesAsync();
+    //Task<CarImageResponse?> GetCarImagByIdAsync(int id);
+    //Task<CarImageResponse?> AddCarImagAsync(CreateCarImageRequest request);
+    //Task DeleteCarImagAsync(int id);
 
-
+    Task<IEnumerable<string>> UploadCarImagesAsync(int carId, IFormFileCollection files);
+    Task<IEnumerable<string>> GetCarImagesAsync(int carId);
 
 }

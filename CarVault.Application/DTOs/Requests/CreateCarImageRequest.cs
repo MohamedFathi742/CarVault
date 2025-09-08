@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CarVault.Application.DTOs.Requests;
+﻿namespace CarVault.Application.DTOs.Requests;
 public record class CreateCarImageRequest
 (
-// int CarId,
-string ImageUrl 
+ int CarId, 
+List<string> ImageUrl 
     
  );

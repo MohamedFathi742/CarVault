@@ -15,6 +15,7 @@ public record class UserResponse
  string? Address ,
  string? ProfileImage ,
  string? Role ,
- List<OrderResponse>? Orders 
+ //string? Token ,
+List<OrderResponse>? Orders 
     
  );

@@ -10,7 +10,7 @@ public record class RegisterUserRequest
  string FullName ,
  string Email ,
  string Password ,
- string? Address,
- string? ProfileImage 
+ string? Address
+ //string? ProfileImage 
     
  );

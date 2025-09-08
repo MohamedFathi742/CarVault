@@ -131,9 +131,14 @@ namespace CarVault.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Cars");
                 });
@@ -358,7 +363,14 @@ namespace CarVault.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CarVault.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Cars")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Category");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CarVault.Domain.Entities.CarImage", b =>
@@ -444,6 +456,8 @@ namespace CarVault.Infrastructure.Migrations
 
             modelBuilder.Entity("CarVault.Domain.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("Cars");
+
                     b.Navigation("Orders");
                 });
 

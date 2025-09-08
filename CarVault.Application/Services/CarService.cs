@@ -3,11 +3,6 @@ using CarVault.Application.DTOs.Responses;
 using CarVault.Application.Interfaces;
 using CarVault.Domain.Entities;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarVault.Application.Services;
 public class CarService(ICarRepository repository):ICarService
@@ -17,7 +12,7 @@ public class CarService(ICarRepository repository):ICarService
     public async Task<IEnumerable<CarWithImageAndCategoryResponse>> GetCarWithImageAndCategoryAsync()
     {
         var cars=await _repository.GetCarWithImageAndCategoryAsync();
-        return cars;
+        return cars.Adapt<IEnumerable<CarWithImageAndCategoryResponse>>();
     }
 
     public async Task<IEnumerable<CarResponse>> GetAllCarsAsync()
@@ -46,15 +41,22 @@ public class CarService(ICarRepository repository):ICarService
        var car= await _repository.GetByIdAsync(id) ?? throw new Exception("Not Found"); ;
         return car.Adapt<CarResponse>();
     }
-    public async Task<CarResponse?> AddCarAsync(CreateCarRequest request)
+    public async Task<CarResponse?> AddCarAsync(CreateCarRequest request, string userId)
     {
         var car = request.Adapt<Car>();
+       car.UserId = userId;
+
         await _repository.AddAsync(car);
         return car.Adapt<CarResponse>();
+        
     }
-    public async Task<CarResponse?> UpdateCarAsync(UpdateCarRequest request, int id)
+    public async Task<CarResponse?> UpdateCarAsync(UpdateCarRequest request, int id, string SellerId, bool isAdmin)
     {
         var car = await _repository.GetByIdAsync(id) ?? throw new Exception("Not Found");
+        if (!isAdmin&&car.UserId!=SellerId)
+        {
+            throw new UnauthorizedAccessException("Unauthoriz user");
+        }
         car.Model= request.Model;
         car.Brand= request.Brand;
         car.Price= request.Price;
@@ -68,13 +70,25 @@ public class CarService(ICarRepository repository):ICarService
     }
 
 
-    public async Task DeleteCarAsync(int id)           
+    public async Task DeleteCarAsync(int id, string SellerId, bool isAdmin)
     {
-      
+       
+
         var car = await _repository.GetByIdAsync(id) ?? throw new Exception("Not Found");
+
+        if (!isAdmin && car.UserId != SellerId)
+        {
+            throw new UnauthorizedAccessException("Unauthoriz user");
+        }
+
         await _repository.DeleteAsync(car);
 
     }
 
-  
+    public async Task< PaginationResponse<CarResponse>> GetPagedAsync(CarFilterRequest filter)
+    {
+        var result = await _repository.GetPagedAsync(filter);
+        return result.Adapt<PaginationResponse<CarResponse>>();
+
+    }
 }
