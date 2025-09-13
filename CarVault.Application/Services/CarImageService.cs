@@ -1,5 +1,7 @@
-﻿using CarVault.Application.Interfaces;
+﻿using CarVault.Application.DTOs.Responses;
+using CarVault.Application.Interfaces;
 using CarVault.Domain.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Http;
 
 namespace CarVault.Application.Services;
@@ -8,16 +10,24 @@ public class CarImageService(ICarImageRepository repository,IFileStorageService 
     private readonly ICarImageRepository _repository = repository;
     private readonly IFileStorageService _fileStorageService = fileStorageService;
 
-    public async Task<IEnumerable<string>> UploadCarImagesAsync(int carId, IFormFileCollection files)
+    public async Task<IEnumerable<CarImageResponse>> UploadCarImagesAsync(int carId, IFormFileCollection files)
     {
      var urls=new List<string>();
 
         foreach (var file in files)
         {
-            
+
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            if (!allowed.Contains(ext)) throw new Exception("invalied extintion");
+
+            if (file.Length == 0) continue;
+
             using var stream=file.OpenReadStream();
 
-            var url = await _fileStorageService.SaveFileAsync(stream, file.FileName, "Uploads");
+            var uniqueName = $"{Guid.NewGuid()}_{file.FileName}";
+
+            var url = await _fileStorageService.SaveFileAsync(stream, uniqueName, "Uploads/CarImages");
             urls.Add(url);
         }
         var carImages = urls.Select(url => new CarImage
@@ -25,42 +35,46 @@ public class CarImageService(ICarImageRepository repository,IFileStorageService 
 
             CarId = carId,
             ImageUrl= url
-        });
+        }).ToList();
         await _repository.UploadImages(carImages);
-        return urls;
+        return urls.Adapt<IEnumerable<CarImageResponse>>();
     }
-    public async Task<IEnumerable<string>> GetCarImagesAsync(int carId)
+
+    public async Task<IEnumerable<CarImageResponse>> GetCarImagesAsync(int carId)
     {
         var images = await _repository.GetImagesByCarId(carId);
-        return images.Select(i => i.ImageUrl).ToList();
+        return images.Adapt<IEnumerable<CarImageResponse>>();
     }
 
-  
-    //public async Task<IEnumerable<CarImageResponse>> GetAllCarImagesAsync()
-    //{
-    //   var image=await _repository.GetAllAsync();
-    //    return image.Adapt<IEnumerable<CarImageResponse>>();
-    //}
 
-    //public async Task<CarImageResponse?> GetCarImagByIdAsync(int id)
-    //{
-    //    var image = await _repository.GetByIdAsync(id);
-    //    return image.Adapt<CarImageResponse>();
-    //}
+    public async Task<IEnumerable<CarImageResponse>> GetCarImageByCarIdAsync(int carId)
+    {
+        var image = await _repository.GetImagesByCarId(carId);
+        return image.Adapt<IEnumerable<CarImageResponse>>();
+    }
 
-    //public async Task<CarImageResponse?> AddCarImagAsync(CreateCarImageRequest request)
-    //{
-    //   var image= request.Adapt<CarImage>();    
-    //    await _repository.AddAsync(image);
-    //    return image.Adapt<CarImageResponse>();
-    //}
+    
 
-    //public async Task DeleteCarImagAsync(int id)
-    //{
-    //    var image = await _repository.GetByIdAsync(id);
-    // await   _repository.DeleteAsync(image!);
-    //}
+    public async Task<CarImageResponse> GetByIdAsync(int carImageId)
+    {
+       var car =await _repository.GetByIdAsync(carImageId)??throw new Exception("Not Found");
+
+        return car.Adapt<CarImageResponse>();
+    }
 
 
+    public async Task DeleteImageAsync(int imageId)
+    {
+       var image=await _repository.GetByIdAsync(imageId) ?? throw new Exception("Not Found");
 
+        await _fileStorageService.DeleteFileAsync(image.ImageUrl);
+        await _repository.DeleteAsync(image);
+
+    }
+
+    public async Task<IEnumerable<CarImageResponse>> GetAllAsync()
+    {
+       var images=await _repository.GetAllAsync();
+        return images.Adapt<IEnumerable<CarImageResponse>>();
+    }
 }

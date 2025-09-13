@@ -2,7 +2,7 @@
 public record class CarImageResponse
 (
  int Id ,
-string ImageUrl 
-//int CarId
+string ImageUrl ,
+int CarId
     
 );

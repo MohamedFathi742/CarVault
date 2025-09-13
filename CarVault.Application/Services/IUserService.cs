@@ -11,10 +11,10 @@ namespace CarVault.Application.Services;
 public interface IUserService
 {
     Task<PaginationResponse<UserResponse>> GetPagedAsync(UserFilterRequest userFilter);
-    Task<IEnumerable<UserResponse?>> GetAllUseresAsync();
+    Task<IEnumerable<UserWithRoleResponse?>> GetAllUseresAsync();
     Task<UserResponse?> GetUserByIdAsync(string userId);
     Task<UserResponse?> GetUserByEmailAsync(string email);
-    Task<UserResponse?> GetUserWithOrdersAsync(string userId);
+    Task<UserWithOrderResponse?> GetUserWithOrdersAsync(string userId);
     Task<UserResponse?> UpdateUserAsync(UpdateUserRequest request, string userId);
     Task DeleteUserAsync(string userId);
 

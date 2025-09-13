@@ -11,24 +11,14 @@ public class CarRepository : GenericRepository<Car>, ICarRepository
 {
     private readonly ApplicationDbContext _context;
     public CarRepository(ApplicationDbContext context) : base(context) => _context = context;
-    //public async Task<CarWithImageAndCategoryResponse?> GetCarWithImageAsync(int id)
-    //{
-    //    return await _context.Cars
-    //        .Where(c => c.Id == id)
-    //        .Include(c=>c.CarImages)
-    //        .ProjectToType<CarWithImageAndCategoryResponse>()
-    //        .AsNoTracking()
-    //        .FirstOrDefaultAsync();
-
-
-    //}
+   
     public async Task<IEnumerable<Car>> GetCarWithCategoryAsync(int categoryId)
     {
         return await _context.Cars
               .Where(c => c.CategoryId == categoryId)
              .Include(c => c.CarImages)
                .Include(c => c.Category)
-              //.ProjectToType<CarWithImageAndCategoryResponse>()
+              
               .AsNoTracking()
               .ToListAsync();
     }
@@ -38,7 +28,8 @@ public class CarRepository : GenericRepository<Car>, ICarRepository
         return await _context.Cars
              .Include(c => c.CarImages)
              .Include(c => c.Category)
-             // .ProjectToType<CarWithImageAndCategoryResponse>()
+            
+            
              .AsNoTracking()
              .ToListAsync();
 

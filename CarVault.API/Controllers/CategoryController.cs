@@ -11,67 +11,59 @@ public class CategoryController(ICategoryService service) : ControllerBase
 {
     private readonly ICategoryService _service = service;
 
-
     [HttpGet]
-    public async Task<IActionResult> GetAll() 
+    public async Task<IActionResult> GetAll()
     {
-    var category= await _service.GetAllCategoriesAsync();
-        return Ok(category);
-    
+        var categories = await _service.GetAllCategoriesAsync();
+        return Ok(categories);
     }
-    [HttpGet("pagenation")]
-    public async Task<IActionResult> Pagenation([FromQuery]CategoryFilterRequest categoryFilter) 
+
+    [HttpGet("pagination")]
+    public async Task<IActionResult> Pagination([FromQuery] CategoryFilterRequest request)
     {
-    var category= await _service.GetPagedAsync(categoryFilter);
-        return Ok(category);
-    
+        var categories = await _service.GetPagedAsync(request);
+        return Ok(categories);
     }
 
     [HttpGet("with-car")]
-    public async Task<IActionResult> GetCategoryWithCar() 
+    public async Task<IActionResult> GetCategoryWithCar()
     {
-
-    var category= await _service.GetCategoryWithCarAsync();
-        return Ok(category);
-    
+        var categories = await _service.GetCategoryWithCarAsync();
+        return Ok(categories);
     }
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetCategoryById(int id) 
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetCategoryById(int id)
     {
-
-    var category= await _service.GetCategoryByIdAsync(id);
+        var category = await _service.GetCategoryByIdAsync(id);
         return Ok(category);
-    
     }
+
+
+
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> AddCategory(CreateCategoryRequest request ) 
+    public async Task<IActionResult> AddCategory([FromBody] CreateCategoryRequest request)
     {
-
-    var category= await _service.AddCategoryAsync(request);
-        return Ok(category);
-    
+        var category = await _service.AddCategoryAsync(request);
+        return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
     }
+
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(UpdateCategoryRequest request ,int id) 
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request, int id)
     {
-
-    var category= await _service.UpdateCategoryAsync(request,id);
-        return NoContent();
-    
+        var updatedCategory = await _service.UpdateCategoryAsync(request, id);
+        return Ok(updatedCategory); 
     }
+
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCategory(int id) 
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteCategory(int id)
     {
-
-     await _service.DeleteCategoryAsync(id);
-        return NoContent();
-    
+        await _service.DeleteCategoryAsync(id);
+        return Ok(new { Message = "Category deleted successfully" });
     }
-
-
-
-
 }
+
+

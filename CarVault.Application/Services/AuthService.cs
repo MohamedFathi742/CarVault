@@ -1,21 +1,41 @@
 ﻿using CarVault.Application.DTOs.Requests;
 using CarVault.Application.DTOs.Responses;
+using CarVault.Application.Interfaces;
 using CarVault.Application.Interfaces.Security;
 using CarVault.Domain.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 
 namespace CarVault.Application.Services;
-public class AuthService(IJwtService jwtService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : IAuthService
+public class AuthService(IJwtService jwtService,
+    UserManager<ApplicationUser> userManager, 
+    SignInManager<ApplicationUser> signInManager,
+    IFileStorageService fileStorage) : IAuthService
 {
     private readonly IJwtService _jwtService = jwtService;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly IFileStorageService _fileStorage = fileStorage;
+
     public async Task<AuthResponse> RegisterUserAsync(RegisterUserRequest request, string role)
     {
         var user = request.Adapt<ApplicationUser>();
 
         user.UserName = request.Email;
+
+        if (request.ProfileImage !=null)
+        {
+            using var stream=request.ProfileImage.OpenReadStream();
+            var uniqueName = $"{Guid.NewGuid()}_{request.ProfileImage.FileName}";
+            var url = await _fileStorage.SaveFileAsync(stream, uniqueName, "Uploads/UserProfileImage");
+
+            user.ProfileImage = url;
+
+        }
+        else
+        {
+            user.ProfileImage = "default-profile.png";
+        }
 
         var createUser = await _userManager.CreateAsync(user, request.Password);
         if (!createUser.Succeeded)
@@ -35,6 +55,8 @@ public class AuthService(IJwtService jwtService, UserManager<ApplicationUser> us
         };
         return result;
     }
+
+
     public async Task<AuthResponse> LoginUserAsync(LoginUserRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);

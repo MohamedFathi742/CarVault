@@ -11,11 +11,11 @@ namespace CarVault.Application.Interfaces;
 public interface IUserRepository
 {
 
-    Task<IEnumerable< UserResponse?>> GetAllUseresAsync();
-    Task<UserResponse?> GetUserByIdAsync(string userId);
-    Task<UserResponse?> GetUserByEmailAsync(string email);
-    Task<UserResponse?> GetUserWithOrdersAsync(string userId);
-    Task<UserResponse?> UpdateUserAsync(UpdateUserRequest request,string userId);
+    Task<IEnumerable<UserWithRoleResponse?>> GetAllUseresAsync();
+    Task<ApplicationUser?> GetUserByIdAsync(string userId);
+    Task<ApplicationUser?> GetUserByEmailAsync(string email);
+    Task<ApplicationUser?> GetUserWithOrdersAsync(string userId);
+    Task<ApplicationUser?> UpdateUserAsync(UpdateUserRequest request,string userId);
    Task DeleteUserAsync(string userId);
     Task<PaginationResponse<ApplicationUser>> GetPagedAsync(UserFilterRequest  userFilter);
 

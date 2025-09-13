@@ -13,61 +13,63 @@ public class OrderController(IOrderService service) : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
-    { 
-    var orders= await _service.GetAllOrdersAsync();
+    {
+        var orders = await _service.GetAllOrdersAsync();
         return Ok(orders);
-    
     }
-    [HttpGet("pagenation")]
-    public async Task<IActionResult> pagenation([FromQuery]OrderFilterRequest orderFilter)
-    { 
-    var orders= await _service.GetPagedAsync(orderFilter);
+
+    [HttpGet("pagination")]
+    public async Task<IActionResult> Pagination([FromQuery] OrderFilterRequest request)
+    {
+        var orders = await _service.GetPagedAsync(request);
         return Ok(orders);
-    
     }
+
     [Authorize(Roles = "Admin")]
     [HttpGet("details")]
     public async Task<IActionResult> OrderDetails()
-    { 
-    var orders= await _service.GetOrderDetailsAsync();
+    {
+        var orders = await _service.GetOrderDetailsAsync();
         return Ok(orders);
-    
     }
+
     [Authorize(Roles = "Admin")]
-    [HttpGet("details-by-user-{id}")]
-    public async Task<IActionResult> GetOrderDetailsByUserId(string id)
-    { 
-    var orders= await _service.GetOrderDetailsByUserIdAsync(id);
+    [HttpGet("details-by-user/{userId}")]
+    public async Task<IActionResult> GetOrderDetailsByUserId(string userId)
+    {
+        var orders = await _service.GetOrderDetailsByUserIdAsync(userId);
         return Ok(orders);
-    
     }
+
     [Authorize(Roles = "Admin")]
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetOrderById(int id)
     {
-        var orders = await _service.GetOrderByIdAsync(id);
-        return Ok(orders);
-
+        var order = await _service.GetOrderByIdAsync(id);
+        return Ok(order);
     }
+
+    
+
     [HttpPost]
-    public async Task<IActionResult> Add(CreateOrderRequest request)
+    public async Task<IActionResult> Add([FromBody] CreateOrderRequest request)
     {
-        var orders = await _service.AddOrderAsync(request);
-        return Ok(orders);
+        var order = await _service.AddOrderAsync(request);
+        return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
+    }
 
-    }
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(UpdateOrderRequest request,int id)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update([FromBody] UpdateOrderRequest request, int id)
     {
-        var orders = await _service.UpdateOrderAsync(request,id);
-        return NoContent();
+        var updatedOrder = await _service.UpdateOrderAsync(request, id);
+        return Ok(updatedOrder); 
     }
-    [HttpDelete("{id}")]
+
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-         await _service.DeleteOrderAsync(id);
-        return NoContent();
+        await _service.DeleteOrderAsync(id);
+        return Ok(new { Message = "Order deleted successfully" });
     }
-
-
 }
+

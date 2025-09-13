@@ -14,27 +14,35 @@ public class UserRepository(UserManager<ApplicationUser> userManager, Applicatio
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<IEnumerable<UserResponse?>> GetAllUseresAsync()
+    public async Task<IEnumerable<UserWithRoleResponse?>> GetAllUseresAsync()
     {
-        return await _userManager.Users
-            .ProjectToType<UserResponse>()
+         var users= await _userManager.Users
             .AsNoTracking()
             .ToListAsync();
+
+        var response = new List<UserWithRoleResponse?>();
+        foreach (var user in users)
+        {
+            var role = await _userManager.GetRolesAsync(user);
+           var userResponse = user.Adapt<UserWithRoleResponse?>();
+         userResponse!.Role= role.FirstOrDefault();
+            response.Add(userResponse);
+        }
+        return response;
     }
-    public async Task<UserResponse?> GetUserByIdAsync(string userId)
+    public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
     {
         return await _userManager.Users
            .Where(u => u.Id == userId)
-           .ProjectToType<UserResponse>()
-           .AsNoTracking()
+            .AsNoTracking()
            .FirstOrDefaultAsync();
 
     }
-    public async Task<UserResponse?> GetUserByEmailAsync(string email)
+    public async Task<ApplicationUser?> GetUserByEmailAsync(string email)
     {
         return await _userManager.Users
             .Where(u => u.Email == email)
-            .ProjectToType<UserResponse>()
+             
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
@@ -45,19 +53,18 @@ public class UserRepository(UserManager<ApplicationUser> userManager, Applicatio
 
 
 
-    public async Task<UserResponse?> GetUserWithOrdersAsync(string userId)
+    public async Task<ApplicationUser?> GetUserWithOrdersAsync(string userId)
     {
         var user = await _userManager.Users
             .Where(u => u.Id == userId)
             .Include(u => u.Orders)
-            .ProjectToType<UserResponse>()
             .AsNoTracking()
             .FirstOrDefaultAsync();
         return user;
 
     }
 
-    public async Task<UserResponse?> UpdateUserAsync(UpdateUserRequest request, string userId)
+    public async Task<ApplicationUser?> UpdateUserAsync(UpdateUserRequest request, string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
@@ -68,7 +75,7 @@ public class UserRepository(UserManager<ApplicationUser> userManager, Applicatio
         user.ProfileImage = request.ProfileImage;
         await _userManager.UpdateAsync(user);
         await _context.SaveChangesAsync();
-        return user.Adapt<UserResponse>();
+        return user;
 
     }
 
@@ -83,29 +90,29 @@ public class UserRepository(UserManager<ApplicationUser> userManager, Applicatio
     public async Task<PaginationResponse<ApplicationUser>> GetPagedAsync(UserFilterRequest userFilter)
     {
         IQueryable<ApplicationUser> query = _context.Users.AsNoTracking();
-      var users=  _userManager.Users.AsQueryable();
+        var users = _userManager.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(userFilter.Name))
         {
-            query = query.Where(u => u.FullName!=null&&u.FullName.Contains(userFilter.Name));
+            query = query.Where(u => u.FullName != null && u.FullName.Contains(userFilter.Name));
         }
 
         if (!string.IsNullOrEmpty(userFilter.Email))
         {
-            query = query.Where(u => u.Email!=null&&u.Email.Contains(userFilter.Email));
+            query = query.Where(u => u.Email != null && u.Email.Contains(userFilter.Email));
         }
 
         if (!string.IsNullOrEmpty(userFilter.Role))
         {
-            var userRole=await _userManager.GetUsersInRoleAsync(userFilter.Role);
+            var userRole = await _userManager.GetUsersInRoleAsync(userFilter.Role);
 
-            users = users.Where(u => userRole.Select(r=>r.Id).Contains(u.Id));
+            users = users.Where(u => userRole.Select(r => r.Id).Contains(u.Id));
         }
 
 
         return await query.ToPagedResultAsync(
             userFilter,
-            searchPredicate:u=>u.FullName.ToLower().Contains(userFilter.Name!)
+            searchPredicate: u => u.FullName.ToLower().Contains(userFilter.Search!)
 
 
             );

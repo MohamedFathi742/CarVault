@@ -28,7 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Uploads\" />
+    <Folder Include="wwwroot\Uploads\CarImages\" />
+    <Folder Include="wwwroot\Uploads\UserProfileImage\" />
   </ItemGroup>
 
 </Project>
